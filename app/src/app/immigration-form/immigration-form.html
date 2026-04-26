@@ -1,0 +1,37 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <h2 class="form-title">US Immigration Pathway Planner</h2>
+
+  <div class="field">
+    <label for="country">Country of Origin</label>
+    <select id="country" formControlName="country">
+      <option value="">— Select your country —</option>
+      <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+    </select>
+    <span class="hint">Your country affects Green Card wait times (India & China have longer waits).</span>
+  </div>
+
+  <div class="field">
+    <label for="year">Year you plan to begin immigration</label>
+    <select id="year" formControlName="year">
+      <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="study">Will you study in the US?</label>
+    <select id="study" formControlName="study">
+      <option value="false">No</option>
+      <option value="true">Yes — on a student visa (F-1)</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="work">Will you pursue immigration through work (H-1B)?</label>
+    <select id="work" formControlName="work">
+      <option value="false">No</option>
+      <option value="true">Yes — through employer sponsorship</option>
+    </select>
+  </div>
+
+  <button type="submit" [disabled]="!form.valid">Show My Immigration Roadmap →</button>
+</form>

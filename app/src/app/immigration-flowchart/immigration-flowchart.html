@@ -1,0 +1,97 @@
+<div class="flowchart-container">
+  <div *ngIf="!hasData" class="placeholder">
+    <div class="placeholder-icon">🗺️</div>
+    <p>Fill out the form above to see your personalized US immigration roadmap.</p>
+  </div>
+
+  <div *ngIf="hasData">
+    <div class="estimate-banner">
+      <div class="estimate-block">
+        <span class="estimate-label">Estimated time to citizenship</span>
+        <span class="estimate-value">{{ totalEstimate }}</span>
+      </div>
+      <div class="estimate-divider"></div>
+      <div class="estimate-block">
+        <span class="estimate-label">Estimated year of naturalization</span>
+        <span class="estimate-value">{{ naturalizationYear }}</span>
+      </div>
+    </div>
+
+    <!-- colour legend -->
+    <div class="color-legend">
+      <span class="legend-label">Step duration:</span>
+      <span class="legend-swatch green"></span><span class="legend-text">≤ 1 yr</span>
+      <span class="legend-swatch yellow"></span><span class="legend-text">1–3 yrs</span>
+      <span class="legend-swatch orange"></span><span class="legend-text">3–7 yrs</span>
+      <span class="legend-swatch red"></span><span class="legend-text">7+ yrs</span>
+    </div>
+
+    <div class="snake-flow">
+
+      <!-- START terminal (centred) -->
+      <div class="terminal-row center">
+        <div class="terminal start-node">🛫 Begin Immigration Journey</div>
+      </div>
+
+      <!--
+        L-connector: START is centred; row 0 is always LTR so the first step is
+        at the LEFT edge.  Draw a line from centre (50%) going down, turn left,
+        arrive at the centre of the first step.
+      -->
+      <div class="l-connector l-center-to-left"></div>
+
+      <ng-container *ngFor="let row of flowRows; let lastRow = last">
+
+        <!-- Horizontal step row -->
+        <div class="flow-row">
+          <ng-container *ngFor="let step of row.displaySteps; let lastStep = last">
+            <div class="step-card"
+                 [style.--step-color]="stepColor(step.durationMonths)"
+                 [style.--step-color-light]="stepColorLight(step.durationMonths)">
+              <div class="step-badge">{{ step.num }}</div>
+              <div class="step-info">
+                <div class="step-name">{{ step.name }}</div>
+                <div class="step-dur">⏱ {{ step.duration }}</div>
+              </div>
+            </div>
+            <div *ngIf="!lastStep" class="h-connector" [class.rtl]="row.isRtl"></div>
+          </ng-container>
+        </div>
+
+        <!--
+          Between rows: straight vertical on the exit side of this row.
+          After the last row: L-connector (or straight centre drop when the last
+          row has only one step and is already centred).
+        -->
+        <ng-container *ngIf="!lastRow">
+          <div class="conn-row"
+               [class.align-right]="!row.isRtl"
+               [class.align-left]="row.isRtl">
+            <div class="v-connector"></div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="lastRow">
+          <!-- Last row has > 1 step → exit is on a side, need L to reach centred END -->
+          <div *ngIf="lastRowNeedsL"
+               class="l-connector"
+               [class.l-right-to-center]="!lastRowIsRtl"
+               [class.l-left-to-center]="lastRowIsRtl"
+               [style.--l-offset]="lastRowOffset">
+          </div>
+          <!-- Last row has 1 step → that step fills full width and exits at centre -->
+          <div *ngIf="!lastRowNeedsL" class="conn-row center">
+            <div class="v-connector"></div>
+          </div>
+        </ng-container>
+
+      </ng-container>
+
+      <!-- END terminal: always centred -->
+      <div class="terminal-row center">
+        <div class="terminal end-node">US Citizen</div>
+      </div>
+
+    </div>
+  </div>
+</div>

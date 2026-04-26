@@ -1,0 +1,389 @@
+// ─── precision constants ─────────────────────────────────────────
+// Width of each horizontal arrow connector between steps.
+$h-conn: 48px;
+// 3-column row: each step = (100% - 2*$h-conn) / 3
+// Half a step (= distance from edge to step centre) = (100% - 2*$h-conn) / 6
+$step-half-3col: calc((100% - #{$h-conn} * 2) / 6);
+
+// ─── connector colour ────────────────────────────────────────────
+$conn-color: #999;
+$conn-radius: 8px;
+
+// ─── container ───────────────────────────────────────────────────
+.flowchart-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0.5rem 0 2rem;
+}
+
+// ─── placeholder ─────────────────────────────────────────────────
+.placeholder {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #666;
+  background: #f9f9fb;
+  border-radius: 12px;
+  border: 2px dashed #ddd;
+
+  .placeholder-icon { font-size: 3rem; margin-bottom: 1rem; }
+  p { font-size: 1.1rem; margin: 0; }
+}
+
+// ─── estimate banner ─────────────────────────────────────────────
+.estimate-banner {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: linear-gradient(135deg, #1a73e8, #0d47a1);
+  color: white;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+
+.estimate-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 1.25rem 1.75rem;
+}
+
+.estimate-divider {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.25);
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.estimate-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  opacity: 0.75;
+}
+
+.estimate-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+// ─── colour legend ────────────────────────────────────────────────
+.color-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 1.75rem;
+  padding: 0.6rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+
+  .legend-label { font-weight: 600; margin-right: 4px; color: #333; }
+
+  .legend-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-left: 8px;
+
+    &.green  { background: hsl(120, 65%, 40%); }
+    &.yellow { background: hsl(80,  65%, 40%); }
+    &.orange { background: hsl(36,  65%, 40%); }
+    &.red    { background: hsl(0,   65%, 40%); }
+  }
+
+  .legend-text { margin-right: 2px; }
+}
+
+// ─── snake flow wrapper ───────────────────────────────────────────
+.snake-flow {
+  display: flex;
+  flex-direction: column;
+}
+
+// ─── terminal rows (START / END) ─────────────────────────────────
+.terminal-row {
+  display: flex;
+
+  &.center      { justify-content: center; }
+  &.align-right { justify-content: flex-end;   padding-right: $step-half-3col; }
+  &.align-left  { justify-content: flex-start; padding-left:  $step-half-3col; }
+}
+
+.terminal {
+  padding: 12px 36px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1rem;
+  white-space: nowrap;
+
+  &.start-node {
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    color: white;
+  }
+  &.end-node {
+    background: linear-gradient(135deg, #0d47a1, #1a73e8);
+    color: white;
+  }
+}
+
+// ─── straight vertical connector rows ────────────────────────────
+.conn-row {
+  display: flex;
+  height: 44px;
+
+  // Padding accounts for the v-connector's own 30px width:
+  //   centre = padding + 30px/2 = $step-half-3col
+  //   → padding = $step-half-3col − 15px
+  &.align-right {
+    justify-content: flex-end;
+    padding-right: calc(#{$step-half-3col} - 15px);
+  }
+  &.align-left {
+    justify-content: flex-start;
+    padding-left: calc(#{$step-half-3col} - 15px);
+  }
+  &.center { justify-content: center; }
+}
+
+// Straight-down line + downward arrowhead
+.v-connector {
+  width: 30px;
+  flex-shrink: 0;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: calc(100% - 10px);
+    width: 2px;
+    background: $conn-color;
+    transform: translateX(-50%);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid $conn-color;
+  }
+}
+
+// ─── horizontal step row ─────────────────────────────────────────
+.flow-row {
+  display: flex;
+  align-items: stretch;
+}
+
+// ─── horizontal arrow between steps ──────────────────────────────
+.h-connector {
+  width: $h-conn;
+  flex-shrink: 0;
+  position: relative;
+  align-self: center;
+  height: 2px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 10px;
+    height: 2px;
+    background: $conn-color;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 10px solid $conn-color;
+  }
+
+  &.rtl {
+    &::before { left: 10px; right: 0; }
+    &::after  { right: auto; left: 0; border-left: none; border-right: 10px solid $conn-color; }
+  }
+}
+
+// ─── L-shaped connectors ─────────────────────────────────────────
+//
+// Each variant uses a single ::before pseudo-element whose two visible borders
+// form the L, plus a ::after arrowhead at the DESTINATION end.
+//
+// Naming: l-{SOURCE}-to-{DEST}
+//   source/dest = "center" | "left" | "right"
+//
+// --l-offset (CSS custom property): distance from the edge of the row to the
+//   centre of the edge step for rows that aren't always 3 columns.
+//   The SCSS constant $step-half-3col is used for the fixed 3-column row 0.
+
+.l-connector {
+  position: relative;
+  height: 48px;
+
+  // Shared arrowhead pointing DOWN
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid $conn-color;
+  }
+
+  // ── START (centre) → first step of row 0 (left edge) ──────────
+  // Row 0 is always a full 3-column row.
+  // ::before spans from the left step centre → container centre (50%).
+  //   border-right  = vertical line dropped from START's bottom centre
+  //   border-bottom = horizontal elbow going left to step 1 centre
+  //   corner        = bottom-right
+  &.l-center-to-left {
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: $step-half-3col;             // left step centre
+      right: 50%;                        // container centre
+      bottom: 10px;                      // leave room for arrowhead
+      border-right: 2px solid $conn-color;
+      border-bottom: 2px solid $conn-color;
+      border-bottom-right-radius: $conn-radius;
+    }
+    // Arrowhead at the left step centre
+    &::after {
+      left: calc(#{$step-half-3col} - 7px);
+    }
+  }
+
+  // ── last LTR row (right edge) → END (centre) ──────────────────
+  // ::before spans from container centre (50%) → right step centre.
+  //   border-right  = vertical line from the right step down
+  //   border-bottom = horizontal elbow going left to 50%
+  //   corner        = bottom-right
+  &.l-right-to-center {
+    --l-offset: calc(#{$step-half-3col}); // overridden per-element for non-3-col rows
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;                         // container centre
+      right: var(--l-offset);            // right step centre from right edge
+      bottom: 10px;
+      border-right: 2px solid $conn-color;
+      border-bottom: 2px solid $conn-color;
+      border-bottom-right-radius: $conn-radius;
+    }
+    // Arrowhead at centre (50%)
+    &::after {
+      left: calc(50% - 7px);
+    }
+  }
+
+  // ── last RTL row (left edge) → END (centre) ───────────────────
+  // ::before spans from left step centre → container centre (50%).
+  //   border-left   = vertical line from the left step down
+  //   border-bottom = horizontal elbow going right to 50%
+  //   corner        = bottom-left
+  &.l-left-to-center {
+    --l-offset: calc(#{$step-half-3col}); // overridden per-element for non-3-col rows
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: var(--l-offset);             // left step centre from left edge
+      right: 50%;                        // container centre
+      bottom: 10px;
+      border-left: 2px solid $conn-color;
+      border-bottom: 2px solid $conn-color;
+      border-bottom-left-radius: $conn-radius;
+    }
+    // Arrowhead at centre (50%)
+    &::after {
+      left: calc(50% - 7px);
+    }
+  }
+}
+
+// ─── step card ───────────────────────────────────────────────────
+.step-card {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid var(--step-color);
+  background: var(--step-color-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s, transform 0.15s;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+    transform: translateY(-2px);
+  }
+}
+
+.step-badge {
+  min-width: 28px;
+  height: 28px;
+  background: var(--step-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-name {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  line-height: 1.4;
+  margin-bottom: 5px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.step-dur {
+  font-size: 0.75rem;
+  color: var(--step-color);
+  font-weight: 700;
+  background: white;
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--step-color);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box;
+}
