@@ -22,15 +22,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js 20
+      - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: app/package-lock.json
 
+      # Use `npm install` (not `npm ci`) because the lockfile was generated on
+      # Windows with npm@11 and contains platform-specific entries the Linux
+      # runner can't strict-verify.  This resolves Linux deps fresh.
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
         working-directory: app
 
       - name: Build (static, base-href /immigration/)
